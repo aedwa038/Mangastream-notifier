@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/Manga_title"
+        android:text="Dragon Ball Minus Special Omake Story"
+        style="@style/MangaTitleStyle"
+        >
+    </TextView>
+
+    <TextView
+        android:id="@+id/Manga_description"
+        android:layout_below="@+id/Manga_title"
+        android:text="Rocket Child Destiny"
+         style="@style/MangaDescriptionStyle"
+        >
+    </TextView>
+
+    <TextView
+        android:id="@+id/manga_date"
+        android:layout_below="@+id/Manga_description"
+        android:text="1 day ago"
+         style="@style/MangaDateStyle"
+        >
+    </TextView>
+
+</RelativeLayout>
