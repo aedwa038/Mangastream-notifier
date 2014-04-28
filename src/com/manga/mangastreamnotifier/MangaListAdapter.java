@@ -14,6 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+
 /**
  * The Class MangaListAdapter.
  */
@@ -46,7 +47,7 @@ public class MangaListAdapter extends BaseAdapter {
 	 */
 	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
+		
 		Log.i(TAG, "getCount "+ mItems.size());
 		return mItems.size();
 	}
@@ -56,9 +57,21 @@ public class MangaListAdapter extends BaseAdapter {
 	 */
 	@Override
 	public Object getItem(int position) {
-		// TODO Auto-generated method stub
+		
 		Log.i(TAG, " getItem");
 		return mItems.get(position);
+	}
+	
+	/**
+	 * Adds the item list.
+	 *
+	 * @param items the items
+	 */
+	public void addItemList (List<MangaItem> items)
+	{
+		mItems.addAll(items);
+		notifyDataSetChanged();
+		
 	}
 
 	/* (non-Javadoc)
@@ -66,7 +79,7 @@ public class MangaListAdapter extends BaseAdapter {
 	 */
 	@Override
 	public long getItemId(int position) {
-		// TODO Auto-generated method stub
+		
 		Log.i(TAG, " getItemId");
 		return position;
 	}
@@ -123,6 +136,7 @@ public class MangaListAdapter extends BaseAdapter {
 	{
 		Log.i(TAG, " clear");
 		mItems.clear();
+		notifyDataSetChanged();
 	}
 
 }

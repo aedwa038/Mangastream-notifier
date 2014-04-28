@@ -4,9 +4,15 @@
     tools:context="com.manga.mangastreamnotifier.MainActivity" >
 
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/Reload"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="@string/Reload"
+        app:showAsAction="never"/>
+    
+    <item
+        android:id="@+id/Filter"
+        android:orderInCategory="200"
+        android:title="@string/Filter"
         app:showAsAction="never"/>
 
 </menu>
