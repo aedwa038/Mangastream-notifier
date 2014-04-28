@@ -6,9 +6,12 @@ import java.util.Vector;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.RelativeLayout;
@@ -99,9 +102,22 @@ public class MangaListAdapter extends BaseAdapter {
 		final TextView description = (TextView) itemLayout.findViewById(R.id.Manga_description);
 		final TextView date = (TextView) itemLayout.findViewById(R.id.manga_date);
 		
+		
 		titleView.setText(mangaItem.getTitle());
 		description.setText(mangaItem.getDescription());
 		date.setText(mangaItem.getDate());
+		
+		itemLayout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				
+				Intent i = new Intent(Intent.ACTION_VIEW);
+				i.setData(Uri.parse(mangaItem.getUrl()));
+				mContext.startActivity(i);
+			}
+		});
 		
 		return itemLayout;
 	}

@@ -40,7 +40,7 @@ public class MainActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		adapter = new MangaListAdapter(getApplicationContext());
+		adapter = new MangaListAdapter(this);
 		// Put divider between ToDoItems and FooterView
 		getListView().setFooterDividersEnabled(true);
 		LayoutInflater inflater = this.getLayoutInflater();

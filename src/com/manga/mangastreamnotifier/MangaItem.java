@@ -1,5 +1,6 @@
 package com.manga.mangastreamnotifier;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MangaItems.
  */
@@ -13,6 +14,27 @@ public class MangaItem {
 
 	/** The date. */
 	private String date;
+	
+	/** The url. */
+	private String url;
+
+	/**
+	 * Gets the url.
+	 *
+	 * @return the url
+	 */
+	public String getUrl() {
+		return url;
+	}
+
+	/**
+	 * Sets the url.
+	 *
+	 * @param url the url to set
+	 */
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
 	/**
 	 * Gets the title.
@@ -89,6 +111,9 @@ public class MangaItem {
 	}
 	
 	
+	/**
+	 * Instantiates a new manga item.
+	 */
 	public MangaItem() {
 		super();
 	}

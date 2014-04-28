@@ -180,6 +180,10 @@ public class RssFeedReader {
 			else if (n.getNodeName().equals("pubDate")) {
 				item.setDate(n.getTextContent());
 			}
+			
+			else if (n.getNodeName().equals("link")) {
+				item.setUrl(n.getTextContent());
+			}
 		}
 		Log.i(TAG, "List add" + item.toString());
 		list.add(item);
