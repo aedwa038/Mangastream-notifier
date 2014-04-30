@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.xml.sax.SAXException;
 
+import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
@@ -29,7 +30,11 @@ public class MainActivity extends ListActivity {
 
 	/** The Constant TAG. */
 	private static final String TAG = "MainActivity";
+	
+	/** The url. */
 	private static String url = "http://mangastream.com/rss";
+	
+	/** The m_dialog. */
 	ProgressDialog m_dialog;
 
 	/*
@@ -48,7 +53,7 @@ public class MainActivity extends ListActivity {
 		TextView footerView = (TextView) footer.findViewById(R.id.footerView);
 		getListView().addFooterView(footerView);
 		getListView().setAdapter(adapter);
-		//loadItems();
+		//getListView().setSelector(findViewById(R.id.l))
 
 	}
 
@@ -111,9 +116,15 @@ public class MainActivity extends ListActivity {
 		new MyTask().execute(url);
 	}
 
+	/**
+	 * The Class MyTask.
+	 */
 	private class MyTask extends AsyncTask<String, Void, List<MangaItem>> {
 		
-		 @Override
+		 /* (non-Javadoc)
+ 		 * @see android.os.AsyncTask#onPreExecute()
+ 		 */
+ 		@Override
 		    protected void onPreExecute() {
 		        super.onPreExecute();
 		        // initialize the dialog
@@ -124,6 +135,9 @@ public class MainActivity extends ListActivity {
 		        m_dialog.show();
 		    }
 
+		/* (non-Javadoc)
+		 * @see android.os.AsyncTask#doInBackground(Params[])
+		 */
 		@Override
 		protected List<MangaItem> doInBackground(String... params) {
 			Log.i(TAG, "doInBackground");
@@ -149,6 +163,9 @@ public class MainActivity extends ListActivity {
 			return list;
 		}
 
+		/* (non-Javadoc)
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
 		protected void onPostExecute(List<MangaItem> result) {
 			adapter.addItemList(result);
 			m_dialog.dismiss();
