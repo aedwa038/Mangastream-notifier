@@ -16,7 +16,7 @@ public class RssFeedReader {
 
 	/** The feedurl. */
 	private String feedurl;
-	HttpURLConnection con;
+	HttpURLConnection connection;
 	
 	/**
 	 * Send get.
@@ -30,11 +30,11 @@ public class RssFeedReader {
 	private HttpURLConnection sendGet() throws IOException {
 		Log.i(TAG, "sendGet");
 		URL obj = new URL(feedurl);
-	    con = (HttpURLConnection) obj.openConnection();
-		con.setRequestMethod("GET");
-		con.setRequestProperty("User-Agent", USER_AGENT);
+	    connection = (HttpURLConnection) obj.openConnection();
+		connection.setRequestMethod("GET");
+		connection.setRequestProperty("User-Agent", USER_AGENT);
 
-		int responseCode = con.getResponseCode();
+		int responseCode = connection.getResponseCode();
 
 		Log.i(TAG, "Sending 'GET' request to URL : " + feedurl);
 		Log.i(TAG, "Response Code : " + responseCode);
@@ -44,7 +44,7 @@ public class RssFeedReader {
 					+ Integer.toString(responseCode));
 		}
 
-		return con;
+		return connection;
 
 	}
 	
@@ -60,7 +60,7 @@ public class RssFeedReader {
 	
 	public void closeConnection ()
 	{
-		con.disconnect();
+		connection.disconnect();
 	}
 	/**
 	 * @return the feedurl

@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.manga.mangastreamnotifier;
 
 import java.io.IOException;
@@ -11,6 +14,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.util.Log;
+
 
 /**
  * The Class RssFeedPullParser.
@@ -62,7 +66,7 @@ public class RssFeedPullParser {
 	/**
 	 * Sets the input.
 	 *
-	 * @param input 
+	 * @param input the new input
 	 */
 	public void setInput(InputStream input) {
 		this.input = input;
@@ -116,7 +120,7 @@ public class RssFeedPullParser {
 	 * @throws XmlPullParserException the xml pull parser exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public List<MangaItem> parse() throws XmlPullParserException, IOException {
+	private List<MangaItem> parse() throws XmlPullParserException, IOException {
 		List<MangaItem> entries = new Vector<MangaItem>();
 		init();
 		int eventType = parser.getEventType();
@@ -150,6 +154,17 @@ public class RssFeedPullParser {
 		}
 
 		return entries;
+	}
+	
+	/**
+	 * Gets the all items.
+	 *
+	 * @return the all items
+	 * @throws XmlPullParserException the xml pull parser exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public List<MangaItem> getAllItems() throws XmlPullParserException, IOException {
+		return parse();
 	}
 	
 	 
