@@ -1,10 +1,13 @@
 package com.manga.mangastreamnotifier;
 
-// TODO: Auto-generated Javadoc
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * The Class MangaItems.
  */
-public class MangaItem {
+public class MangaItem implements Comparable<MangaItem> {
 
 	/** The title. */
 	private String title;
@@ -13,14 +16,14 @@ public class MangaItem {
 	private String description;
 
 	/** The date. */
-	private String date;
-	
+	private Date date;
+
 	/** The url. */
 	private String url;
 
 	/**
 	 * Gets the url.
-	 *
+	 * 
 	 * @return the url
 	 */
 	public String getUrl() {
@@ -29,8 +32,9 @@ public class MangaItem {
 
 	/**
 	 * Sets the url.
-	 *
-	 * @param url the url to set
+	 * 
+	 * @param url
+	 *            the url to set
 	 */
 	public void setUrl(String url) {
 		this.url = url;
@@ -80,7 +84,7 @@ public class MangaItem {
 	 * @return the date
 	 */
 	public String getDate() {
-		return date;
+		return new SimpleDateFormat("EEE, d MMM yyyy").format(date);
 	}
 
 	/**
@@ -90,7 +94,17 @@ public class MangaItem {
 	 *            the date to set
 	 */
 	public void setDate(String date) {
-		this.date = date;
+		if (date != null)
+		{
+			try {
+				this.date = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z")
+						.parse(date);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	/**
@@ -107,10 +121,17 @@ public class MangaItem {
 		super();
 		this.title = title;
 		this.description = description;
-		this.date = date;
+		setDate(date);
 	}
-	
-	
+
+	public MangaItem(String title, String description, String url, String date) {
+		super();
+		this.title = title;
+		this.description = description;
+		setDate(date);
+		this.url = url;
+	}
+
 	/**
 	 * Instantiates a new manga item.
 	 */
@@ -118,13 +139,25 @@ public class MangaItem {
 		super();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return "MangaItem [title=" + title + ", description=" + description
 				+ ", date=" + date + "]";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(MangaItem another) {
+		return getDate().compareTo(another.getDate());
 	}
 
 }

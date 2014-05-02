@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Vector;
 
 import org.xml.sax.SAXException;
+import org.xmlpull.v1.XmlPullParserException;
 
-import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
@@ -141,25 +141,23 @@ public class MainActivity extends ListActivity {
 		@Override
 		protected List<MangaItem> doInBackground(String... params) {
 			Log.i(TAG, "doInBackground");
-			RssFeedReader reader = new RssFeedReader(params[0]);
+			RssFeedPullParser reader = new RssFeedPullParser();
 			Log.i(TAG, params[0]);
 			Vector<MangaItem> list = new Vector<MangaItem>();
-			HttpURLConnection connection = null;
+			RssFeedReader connection = null;
+			connection = new RssFeedReader(params[0]);
 			try {
-				connection = reader.sendGet();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				Log.w(TAG, e1.toString());
-			}
-			try {
-				list.addAll(reader.parse(connection));
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				Log.w(TAG, e.toString());
+				reader.setInput(connection.getInputStream());
+				try {
+					list.add(reader.readNextItem());
+				} catch (XmlPullParserException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} catch (IOException e) {
 				Log.w(TAG, e.toString());
 			}
-
+			connection.closeConnection();
 			return list;
 		}
 

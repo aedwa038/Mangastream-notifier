@@ -105,7 +105,7 @@ public class MangaListAdapter extends BaseAdapter {
 		
 		titleView.setText(mangaItem.getTitle());
 		description.setText(mangaItem.getDescription());
-		date.setText(mangaItem.getDate());
+		//date.setText(mangaItem.getDate());
 		
 		itemLayout.setOnClickListener(new OnClickListener() {
 			
