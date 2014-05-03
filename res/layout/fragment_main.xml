@@ -10,7 +10,6 @@
 
     <TextView
         android:id="@+id/Manga_title"
-        android:text="Dragon Ball Minus Special Omake Story"
         style="@style/MangaTitleStyle"
         >
     </TextView>
@@ -18,7 +17,6 @@
     <TextView
         android:id="@+id/Manga_description"
         android:layout_below="@+id/Manga_title"
-        android:text="Rocket Child Destiny"
          style="@style/MangaDescriptionStyle"
         >
     </TextView>
@@ -26,8 +24,7 @@
     <TextView
         android:id="@+id/manga_date"
         android:layout_below="@+id/Manga_description"
-        android:text="1 day ago"
-         style="@style/MangaDateStyle"
+        style="@style/MangaDateStyle"
         >
     </TextView>
 
