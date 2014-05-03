@@ -3,6 +3,7 @@ package com.manga.mangastreamnotifier;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * The Class MangaItems.
@@ -84,7 +85,12 @@ public class MangaItem implements Comparable<MangaItem> {
 	 * @return the date
 	 */
 	public String getDate() {
-		return new SimpleDateFormat("EEE, d MMM yyyy").format(date);
+		String pubDate = "";
+		if (date != null)
+		{
+			pubDate = new SimpleDateFormat("EEE, d MMM yyyy").format(date);
+		}
+		return pubDate;
 	}
 
 	/**
@@ -146,8 +152,8 @@ public class MangaItem implements Comparable<MangaItem> {
 	 */
 	@Override
 	public String toString() {
-		return "MangaItem [title=" + title + ", description=" + description
-				+ ", date=" + date + "]";
+		return "MangaItem [title=" + title + ":: description=" + description
+				+ ":: date=" + date.toString() + ":: url=" + url + "]";
 	}
 
 	/*

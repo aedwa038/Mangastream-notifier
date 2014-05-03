@@ -97,7 +97,7 @@ public class RssFeedPullParser {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public List<MangaItem> getAllChapters() throws XmlPullParserException, IOException {
-
+		init();
 		return parse();
 	}
 
@@ -106,7 +106,7 @@ public class RssFeedPullParser {
 	 *
 	 * @throws XmlPullParserException the xml pull parser exception
 	 */
-	public void init() throws XmlPullParserException
+	private void init() throws XmlPullParserException
 	{
 		factory = XmlPullParserFactory.newInstance();
 		parser = factory.newPullParser();
@@ -176,7 +176,7 @@ public class RssFeedPullParser {
 	 * @throws XmlPullParserException the xml pull parser exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public MangaItem readNextItem() throws XmlPullParserException, IOException {
+	public MangaItem readNextEntry() throws XmlPullParserException, IOException {
 		if (parser == null)
 		{
 			init();
