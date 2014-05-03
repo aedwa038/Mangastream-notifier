@@ -176,7 +176,7 @@ public class RssFeedPullParser {
 	 * @throws XmlPullParserException the xml pull parser exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public MangaItem readNextEntry() throws XmlPullParserException, IOException {
+	public MangaItem readLatestChapter() throws XmlPullParserException, IOException {
 		if (parser == null)
 		{
 			init();
