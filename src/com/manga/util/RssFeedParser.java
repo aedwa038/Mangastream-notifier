@@ -1,4 +1,4 @@
-package com.manga.mangastreamnotifier;
+package com.manga.util;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -13,6 +13,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.manga.mangastreamnotifier.MangaItem;
 
 import android.util.Log;
 

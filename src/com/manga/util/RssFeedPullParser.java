@@ -1,7 +1,7 @@
 /*
  * 
  */
-package com.manga.mangastreamnotifier;
+package com.manga.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +12,8 @@ import java.util.Vector;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
+
+import com.manga.mangastreamnotifier.MangaItem;
 
 import android.util.Log;
 

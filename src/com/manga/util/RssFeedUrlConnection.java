@@ -1,4 +1,4 @@
-package com.manga.mangastreamnotifier;
+package com.manga.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,7 +7,7 @@ import java.net.URL;
 
 import android.util.Log;
 
-public class RssFeedReader {
+public class RssFeedUrlConnection {
 	
 	/** The user agent. */
 	private final String USER_AGENT = "Mozilla/5.0";
@@ -69,11 +69,11 @@ public class RssFeedReader {
 		return feedurl;
 	}
 
-	public RssFeedReader() {
+	public RssFeedUrlConnection() {
 		super();
 	}
 
-	public RssFeedReader(String feedurl) {
+	public RssFeedUrlConnection(String feedurl) {
 		super();
 		this.feedurl = feedurl;
 	}

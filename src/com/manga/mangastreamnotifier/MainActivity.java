@@ -17,6 +17,8 @@ import java.util.Vector;
 import org.xmlpull.v1.XmlPullParserException;
 
 import com.manga.mangastreamnotifier.service.RssNotificationService;
+import com.manga.util.RssFeedPullParser;
+import com.manga.util.RssFeedUrlConnection;
 
 import android.app.AlarmManager;
 import android.app.ListActivity;
@@ -200,8 +202,8 @@ public class MainActivity extends ListActivity {
 			RssFeedPullParser reader = new RssFeedPullParser();
 			Log.i(TAG, params[0]);
 			Vector<MangaItem> list = new Vector<MangaItem>();
-			RssFeedReader connection = null;
-			connection = new RssFeedReader(params[0]);
+			RssFeedUrlConnection connection = null;
+			connection = new RssFeedUrlConnection(params[0]);
 			try {
 				reader.setInput(connection.getInputStream());
 				try {
