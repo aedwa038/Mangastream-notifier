@@ -20,15 +20,15 @@ public class mangaItemSQLiteHelper extends SQLiteOpenHelper {
 	private static final String TABLE_CONTACTS = "mangas";
 
 	/** The Constant KEY_ID. */
-	private static final String KEY_ID = "id";
+	private static final String COLUMN_NAME_ID = "id";
 
-	private static final String KEY_TITLE = "title";
+	private static final String COLUMN_NAME_TITLE = "title";
 
-	private static final String KEY_DESCRIPTION = "description";
+	private static final String COLUMN_NAME_DESCRIPTION = "description";
 
-	private static final String KEY_DATE = "date";
+	private static final String COLUMN_NAME_DATE = "date";
 
-	private static final String KEY_URL = "url";
+	private static final String COLUMN_NAME_URL = "url";
 
 	public mangaItemSQLiteHelper(Context context, String name, CursorFactory factory, int version) {
 		super(context, name, factory, version);
