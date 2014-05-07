@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MangaItems.
  */
@@ -21,6 +22,46 @@ public class MangaItem implements Comparable<MangaItem> {
 
 	/** The url. */
 	private String url;
+	
+	
+	/** The id. */
+	private int id;
+
+	/**
+	 * Gets the id.
+	 *
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * Instantiates a new manga item.
+	 *
+	 * @param title the title
+	 * @param description the description
+	 * @param date the date
+	 * @param url the url
+	 * @param id the id
+	 */
+	public MangaItem(String title, String description, Date date, String url, int id) {
+		super();
+		this.title = title;
+		this.description = description;
+		this.date = date;
+		this.url = url;
+		this.id = id;
+	}
+
+	/**
+	 * Sets the id.
+	 *
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	/**
 	 * Gets the url.
@@ -92,6 +133,22 @@ public class MangaItem implements Comparable<MangaItem> {
 		}
 		return pubDate;
 	}
+	
+	/**
+	 * Gets the pub date.
+	 *
+	 * @return the pub date
+	 */
+	public Date getpubDate()
+	{
+		return date;
+	}
+	
+	
+	public void setpubDate(Date date)
+	{
+		this.date = date;
+	}
 
 	/**
 	 * Sets the date.
@@ -130,6 +187,14 @@ public class MangaItem implements Comparable<MangaItem> {
 		setDate(date);
 	}
 
+	/**
+	 * Instantiates a new manga item.
+	 *
+	 * @param title the title
+	 * @param description the description
+	 * @param url the url
+	 * @param date the date
+	 */
 	public MangaItem(String title, String description, String url, String date) {
 		super();
 		this.title = title;
@@ -163,7 +228,9 @@ public class MangaItem implements Comparable<MangaItem> {
 	 */
 	@Override
 	public int compareTo(MangaItem another) {
-		return getDate().compareTo(another.getDate());
-	}
+		if (getpubDate() == null || another.getpubDate() == null)
+		      return 0;
+		    return getpubDate().compareTo(another.getpubDate());
+		  }
 
 }
