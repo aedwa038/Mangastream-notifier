@@ -14,10 +14,8 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-
-
 /**
- * The Class mangaItemSQLiteHelper.
+ * The Class mangaItemSQLiteHelper. Used to store the latest chapter from the rssfeeds
  */
 public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 
@@ -109,6 +107,7 @@ public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		db.execSQL("DROP TABLE IF EXITS" + TABLE_MANGA);
 		onCreate(db);
+		db.close();
 
 	}
 
@@ -129,13 +128,14 @@ public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 		value.put(COLUMN_NAME_URL, item.getUrl());
 
 		db.insertOrThrow(TABLE_MANGA, null, value);
-
+		db.close();
 	}
 
 	/**
 	 * Adds the manga list.
-	 *
-	 * @param entries the entries
+	 * 
+	 * @param entries
+	 *            the entries
 	 */
 	public void addMangaList(List<MangaItem> entries)
 	{
@@ -170,6 +170,8 @@ public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 		db.delete(TABLE_MANGA, COLUMN_NAME_ID + " = ?",
 				new String[] { String.valueOf(item.getId()) });
 
+		db.close();
+
 	}
 
 	/**
@@ -185,24 +187,25 @@ public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 
 		Cursor cursor = db.query(TABLE_MANGA, COLUMS, "id = ?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
-		MangaItem item  = null;
+		MangaItem item = null;
 
 		if (cursor != null) {
 			cursor.moveToFirst();
 			item = getMangaItem(cursor);
 		}
+		db.close();
 		return item;
 	}
 
 	/**
 	 * Gets the all manga items.
-	 *
+	 * 
 	 * @return the all manga items
 	 */
 	public List<MangaItem> getAllMangaItems()
 	{
 		// 1. build the query
-		String query = "SELECT  * FROM " + TABLE_MANGA +" ORDER BY "+ COLUMN_NAME_DATE +" DESC";
+		String query = "SELECT  * FROM " + TABLE_MANGA + " ORDER BY " + COLUMN_NAME_DATE + " DESC";
 		List<MangaItem> items = new Vector<MangaItem>();
 
 		// 2. get reference to writable DB
@@ -218,13 +221,13 @@ public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 
 		}
-
+		db.close();
 		return items;
 	}
 
 	/**
 	 * Gets the latest chapter.
-	 *
+	 * 
 	 * @return the latest chapter
 	 */
 	public MangaItem getLatestChapter()
@@ -241,48 +244,50 @@ public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 			cursor.moveToFirst();
 			item = getMangaItem(cursor);
 		}
+		db.close();
 		return item;
 	}
-	
-	
+
 	/**
 	 * Removes the oldest manga.
 	 */
-	public void removeOldestManga ()
+	public void removeOldestManga()
 	{
 		// 1. build the query
-				String query = "SELECT * FROM " + TABLE_MANGA + " WHERE " + COLUMN_NAME_DATE + "=( SELECT MIN(" + COLUMN_NAME_DATE + ") FROM " + TABLE_MANGA + ")";
+		String query = "SELECT * FROM " + TABLE_MANGA + " WHERE " + COLUMN_NAME_DATE + "=( SELECT MIN(" + COLUMN_NAME_DATE + ") FROM " + TABLE_MANGA + ")";
 
-				// 2. get reference to writable DB
-				SQLiteDatabase db = this.getWritableDatabase();
-				Cursor cursor = db.rawQuery(query, null);
-				MangaItem item = null;
-				if (cursor != null && cursor.getCount() > 0)
-				{
-					cursor.moveToFirst();
-					item = getMangaItem(cursor);
-				}
-				deleteMangaItem(item);
-		
+		// 2. get reference to writable DB
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery(query, null);
+		MangaItem item = null;
+		if (cursor != null && cursor.getCount() > 0)
+		{
+			cursor.moveToFirst();
+			item = getMangaItem(cursor);
+		}
+		deleteMangaItem(item);
+
+		db.close();
+
 	}
-	
-	
+
 	/**
 	 * Gets the manga item.
-	 *
-	 * @param cursor the cursor
+	 * 
+	 * @param cursor
+	 *            the cursor
 	 * @return the manga item
 	 */
-	private MangaItem getMangaItem (Cursor cursor)
+	private MangaItem getMangaItem(Cursor cursor)
 	{
 		MangaItem item = null;
-			item = new MangaItem();
-			item.setId(Integer.parseInt(cursor.getString(0)));
-			item.setTitle(cursor.getString(1));
-			item.setDescription(cursor.getString(2));
-			item.setpubDate(new Date(cursor.getLong(3)));
-			item.setUrl(cursor.getString(4));
-	
+		item = new MangaItem();
+		item.setId(Integer.parseInt(cursor.getString(0)));
+		item.setTitle(cursor.getString(1));
+		item.setDescription(cursor.getString(2));
+		item.setpubDate(new Date(cursor.getLong(3)));
+		item.setUrl(cursor.getString(4));
+
 		return item;
 	}
 

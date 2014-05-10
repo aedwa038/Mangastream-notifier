@@ -3,11 +3,9 @@ package com.manga.mangastreamnotifier;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class MangaItems.
+ * The Class MangaItems. Stores chapter information for the latest chapters on the feed 
  */
 public class MangaItem implements Comparable<MangaItem> {
 

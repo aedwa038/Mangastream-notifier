@@ -1,15 +1,6 @@
 package com.manga.mangastreamnotifier;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
@@ -19,6 +10,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import com.manga.mangastreamnotifier.service.RssNotificationService;
 import com.manga.util.RssFeedPullParser;
 import com.manga.util.RssFeedUrlConnection;
+
+import databasehelper.MangaItemSQLiteHelper;
 
 import android.app.AlarmManager;
 import android.app.ListActivity;
@@ -54,9 +47,12 @@ public class MainActivity extends ListActivity {
 
 	/** The alarm. */
 	private AlarmManager alarm;
-	
+
 	/** The pintent. */
 	private PendingIntent pintent;
+
+	/** The db. */
+	MangaItemSQLiteHelper db;
 
 	/*
 	 * (non-Javadoc)
@@ -75,8 +71,7 @@ public class MainActivity extends ListActivity {
 		getListView().addFooterView(footerView);
 		getListView().setAdapter(adapter);
 		// getListView().setSelector(findViewById(R.id.l))
-
-		cache = new Vector<MangaItem>();
+		db = new MangaItemSQLiteHelper(getApplicationContext());
 
 	}
 
@@ -106,22 +101,12 @@ public class MainActivity extends ListActivity {
 		int id = item.getItemId();
 		if (id == R.id.Reload) {
 			adapter.clear();
-			cache.clear();
-			refresh();
+			loadItems();
 			return true;
 		} else if (id == R.id.Filter) {
 
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	/**
-	 * Refresh.
-	 */
-	private void refresh()
-	{
-		m_dialog = new ProgressDialog(this);
-		new MyTask().execute(url);
 	}
 
 	/*
@@ -131,13 +116,15 @@ public class MainActivity extends ListActivity {
 	 */
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
+		loadItems();
+	}
 
-		if (adapter.getCount() == 0) {
-			loadItems();
-
-		}
+	/**
+	 * Load from database.
+	 */
+	private void loadFromDatabase() {
+		adapter.addItemList(db.getAllMangaItems());
 	}
 
 	/*
@@ -148,9 +135,6 @@ public class MainActivity extends ListActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		if (cache.size() > 0) {
-			saveToFile();
-		}
 	}
 
 	/**
@@ -158,20 +142,25 @@ public class MainActivity extends ListActivity {
 	 */
 	private void loadItems() {
 		Log.i(TAG, "loadItems()");
-		// TODO this will probably change to a proper datasource in the future
-		if (file.exists()) {
-			loadChapters();
-			adapter.addItemList(cache);
-		}
-		else
-		{
+		//first check if there are any items in the database.
+		if (db.getCount() == 0) {
+			//stops the service
+			stopNotifications();
+			//downloads the latest chapters from the site
 			m_dialog = new ProgressDialog(this);
 			new MyTask().execute(url);
 		}
+		else
+		{
+			loadFromDatabase();
+		}
+
+		
 	}
 
 	/**
-	 * The Class MyTask.
+	 * The Class MyTask. This class will download the latest chapters from the the rssfeed
+	 * and places them in the database.
 	 */
 	private class MyTask extends AsyncTask<String, Void, List<MangaItem>> {
 
@@ -214,8 +203,9 @@ public class MainActivity extends ListActivity {
 				}
 			} catch (IOException e) {
 				Log.w(TAG, e.toString());
+			} finally {
+				connection.closeConnection();
 			}
-			connection.closeConnection();
 			return list;
 		}
 
@@ -225,11 +215,13 @@ public class MainActivity extends ListActivity {
 		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 		 */
 		protected void onPostExecute(List<MangaItem> result) {
-			adapter.addItemList(result);
-			cache.addAll(result);
 			m_dialog.dismiss();
-			
-			//Initialize Service Intent
+			if (result.size() != 0)
+			{
+				db.addMangaList(result);
+				adapter.addItemList(db.getAllMangaItems());
+			}
+			// Initialize Service Intent
 			Intent serviceIntent = new Intent(getApplicationContext(), RssNotificationService.class);
 			pintent = PendingIntent.getService(getApplicationContext(), 0, serviceIntent, 0);
 			startNotifications();
@@ -244,7 +236,7 @@ public class MainActivity extends ListActivity {
 		Calendar cal = Calendar.getInstance();
 
 		alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-		// Start every 30 seconds
+		// Start every 30 seconds TODO: need to change this to every 30 minutes
 		alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
 				60 * 1000, pintent);
 	}
@@ -257,96 +249,4 @@ public class MainActivity extends ListActivity {
 		alarm.cancel(pintent);
 	}
 
-	/*
-	 * Used for testing only. added until a proper data source is ready.
-	 */
-
-	/** The cache. */
-	private static Vector<MangaItem> cache;
-
-	/** The file. */
-	static File file = new File("Items.txt");
-
-	/**
-	 * Load chapters.
-	 * 
-	 * @return the vector
-	 */
-	public Vector<MangaItem> loadChapters()
-	{
-		BufferedReader reader = null;
-		Vector<MangaItem> entries = new Vector<MangaItem>();
-
-		try {
-			FileInputStream fis = openFileInput(file.getName());
-			reader = new BufferedReader(new InputStreamReader(fis));
-
-			String line = null;
-
-			while (null != (line = reader.readLine())) {
-
-				String subString = line.substring(1, line.length() - 1);
-				String[] stringArray = subString.split("::");
-
-				String[] title = stringArray[0].split("=");
-				String[] description = stringArray[1].split("=");
-				String[] date = stringArray[2].split("=");
-				String[] url = stringArray[3].split("=");
-
-				entries.add(new MangaItem(title[1], description[1], url[1], date[1]));
-
-			}
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (null != reader) {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		return entries;
-	}
-
-	/**
-	 * Save to file.
-	 */
-	public void saveToFile()
-	{
-
-		PrintWriter writer = null;
-		try
-		{
-			if (!file.exists())
-			{
-				file.createNewFile();
-			} else
-			{
-				file.delete();
-			}
-
-			file.createNewFile();
-			FileOutputStream outputStream = openFileOutput(file.getName(), MODE_PRIVATE);
-			writer = new PrintWriter(new BufferedWriter(
-					new OutputStreamWriter(outputStream)));
-			for (MangaItem mangaItem : cache)
-			{
-				writer.println(mangaItem.toString());
-
-			}
-
-			writer.close();
-		} catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
 }

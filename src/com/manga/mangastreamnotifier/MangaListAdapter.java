@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 /**
  * The Class MangaListAdapter.
+ *  Used to display the latest chapters in a listiview format
  */
 public class MangaListAdapter extends BaseAdapter {
 
