@@ -1,25 +1,17 @@
 package com.manga.mangastreamnotifier;
 
-import java.io.IOException;
 import java.util.Calendar;
-import java.util.List;
-import java.util.Vector;
-
-import org.xmlpull.v1.XmlPullParserException;
-
 import com.manga.mangastreamnotifier.service.RssNotificationService;
-import com.manga.util.RssFeedPullParser;
-import com.manga.util.RssFeedUrlConnection;
-
 import databasehelper.MangaItemSQLiteHelper;
 
 import android.app.AlarmManager;
 import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * The Class MainActivity.
@@ -39,9 +32,6 @@ public class MainActivity extends ListActivity {
 	/** The Constant TAG. */
 	private static final String TAG = "MainActivity";
 
-	/** The url. */
-	private static String url = "http://mangastream.com/rss";
-
 	/** The m_dialog. */
 	ProgressDialog m_dialog;
 
@@ -53,6 +43,21 @@ public class MainActivity extends ListActivity {
 
 	/** The db. */
 	MangaItemSQLiteHelper db;
+	
+	private BroadcastReceiver receiver = new BroadcastReceiver() {
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Bundle bundle = intent.getExtras();
+			if (bundle != null) {
+				int resultCode = bundle.getInt(RssNotificationService.RESULT);
+				if (resultCode == RESULT_OK) {
+					Toast.makeText(MainActivity.this, "New Chapters Available", Toast.LENGTH_LONG).show();
+					loadFromDatabase();
+				}
+			}
+		}
+	};
 
 	/*
 	 * (non-Javadoc)
@@ -117,13 +122,19 @@ public class MainActivity extends ListActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		loadItems();
+		registerReceiver(receiver, new IntentFilter(RssNotificationService.NOTIFICATION));
+		if (adapter.getCount() == 0)
+		{
+			loadItems();
+		}
+		
 	}
 
 	/**
 	 * Load from database.
 	 */
 	private void loadFromDatabase() {
+		adapter.clear();
 		adapter.addItemList(db.getAllMangaItems());
 	}
 
@@ -135,6 +146,7 @@ public class MainActivity extends ListActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
+		unregisterReceiver(receiver);
 	}
 
 	/**
@@ -142,91 +154,21 @@ public class MainActivity extends ListActivity {
 	 */
 	private void loadItems() {
 		Log.i(TAG, "loadItems()");
-		//first check if there are any items in the database.
+		// first check if there are any items in the database.
 		if (db.getCount() == 0) {
-			//stops the service
+			Toast.makeText(this, "Loading New Chapters", Toast.LENGTH_SHORT).show();
+			// stops the service just in case the service is already resgistered
 			stopNotifications();
-			//downloads the latest chapters from the site
-			m_dialog = new ProgressDialog(this);
-			new MyTask().execute(url);
+			Intent serviceIntent = new Intent(getApplicationContext(), RssNotificationService.class);
+			pintent = PendingIntent.getService(getApplicationContext(), 0, serviceIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			startNotifications();
+
 		}
+		
 		else
 		{
 			loadFromDatabase();
 		}
-
-		
-	}
-
-	/**
-	 * The Class MyTask. This class will download the latest chapters from the the rssfeed
-	 * and places them in the database.
-	 */
-	private class MyTask extends AsyncTask<String, Void, List<MangaItem>> {
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPreExecute()
-		 */
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			// initialize the dialog
-			m_dialog.setTitle("Searching...");
-			m_dialog.setMessage("Please wait while searching...");
-			m_dialog.setIndeterminate(true);
-			m_dialog.setCancelable(true);
-			m_dialog.show();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#doInBackground(Params[])
-		 */
-		@Override
-		protected List<MangaItem> doInBackground(String... params) {
-			Log.i(TAG, "doInBackground");
-			RssFeedPullParser reader = new RssFeedPullParser();
-			Log.i(TAG, params[0]);
-			Vector<MangaItem> list = new Vector<MangaItem>();
-			RssFeedUrlConnection connection = null;
-			connection = new RssFeedUrlConnection(params[0]);
-			try {
-				reader.setInput(connection.getInputStream());
-				try {
-					list.addAll(reader.getAllItems());
-
-				} catch (XmlPullParserException e) {
-					Log.e(TAG, e.toString());
-				}
-			} catch (IOException e) {
-				Log.w(TAG, e.toString());
-			} finally {
-				connection.closeConnection();
-			}
-			return list;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-		 */
-		protected void onPostExecute(List<MangaItem> result) {
-			m_dialog.dismiss();
-			if (result.size() != 0)
-			{
-				db.addMangaList(result);
-				adapter.addItemList(db.getAllMangaItems());
-			}
-			// Initialize Service Intent
-			Intent serviceIntent = new Intent(getApplicationContext(), RssNotificationService.class);
-			pintent = PendingIntent.getService(getApplicationContext(), 0, serviceIntent, 0);
-			startNotifications();
-		}
-
 	}
 
 	/**
@@ -234,18 +176,20 @@ public class MainActivity extends ListActivity {
 	 */
 	private void startNotifications() {
 		Calendar cal = Calendar.getInstance();
-
-		alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-		// Start every 30 seconds TODO: need to change this to every 30 minutes
-		alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
-				60 * 1000, pintent);
+		
+			Log.i(TAG, "Registering new service");
+			alarm = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+			// Start every 30 seconds TODO: need to change this to every 30
+			// minutes
+			alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
+					60 * 1000, pintent);
 	}
 
 	/**
 	 * Stop notifications.
 	 */
 	private void stopNotifications() {
-		alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+		alarm = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
 		alarm.cancel(pintent);
 	}
 
