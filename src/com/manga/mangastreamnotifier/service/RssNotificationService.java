@@ -91,6 +91,8 @@ public class RssNotificationService extends IntentService {
 					latestResults.add(latestFromFeed);
 					latestFromFeed = reader.readLatestChapter();
 				}
+				reader.disconect();
+				feed.closeConnection();
 
 			} catch (IOException e) {
 				Log.e(TAG, "Error initializing rss reader" + e.toString());
@@ -277,7 +279,7 @@ public class RssNotificationService extends IntentService {
 		sendBroadcast(intent);
 	}
 	
-//TODO: Will probably have to change this to a 
+//TODO: Will probably have to change this to a runnable
 	/**
 	 * The Class MyTask. This class will download the latest chapters from the
 	 * the rssfeed and places them in the database.
@@ -312,6 +314,7 @@ public class RssNotificationService extends IntentService {
 				reader.setInput(connection.getInputStream());
 				try {
 					list.addAll(reader.getAllItems());
+					reader.disconect();
 
 				} catch (XmlPullParserException e) {
 					Log.e(TAG, e.toString());
