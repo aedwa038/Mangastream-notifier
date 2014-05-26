@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
@@ -59,6 +58,9 @@ public class RssNotificationService extends IntentService {
 	/** The pattern. */
 	long[] pattern = { 500, 500, 500, 500, 500, 500, 500, 500, 500 };
 
+	/** The Notification id. */
+	int NotificationId = 1;
+
 	/**
 	 * Instantiates a new rss notification service.
 	 */
@@ -74,52 +76,66 @@ public class RssNotificationService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		Log.i(TAG, "onHandleIntent");
-		Vector<MangaItem> latestResults = new Vector<MangaItem>();
-		db = new MangaItemSQLiteHelper(getApplicationContext());
-		MangaItem latestChapter = db.getLatestChapter();
-		RssFeedUrlConnection feed = new RssFeedUrlConnection(url);
-		if (db.getCount() != 0)
+		Vector<MangaItem> latestResults = getLatestFromFeed();
+
+		if (latestResults.size() != 0)
 		{
-
-			try {
-				reader = new RssFeedPullParser(feed.getInputStream());
-
-				MangaItem latestFromFeed = reader.readLatestChapter();
-				while (latestFromFeed != null && !latestChapter.getTitle().equals(latestFromFeed.getTitle()))
-				{
-					Log.i(TAG, latestFromFeed.getTitle());
-					latestResults.add(latestFromFeed);
-					latestFromFeed = reader.readLatestChapter();
-				}
-				reader.disconect();
-				feed.closeConnection();
-
-			} catch (IOException e) {
-				Log.e(TAG, "Error initializing rss reader" + e.toString());
-			} catch (XmlPullParserException e) {
-
-				Log.e(TAG, "Error rss reader" + e.toString());
-			}
-
-			if (latestResults.size() != 0)
-			{
-				updateUser(latestResults);
-			}
-			else
-			{
-				Log.i(TAG, "no new chapters");
-			}
-
-			if (db.getCount() > CHAPTERLIMIT)
-			{
-				purgeOldItems();
-			}
+			db.addMangaList(latestResults);
+			updateUser(latestResults);
 		}
 		else
 		{
-			new MyTask().execute(url);
+			Log.i(TAG, "no new chapters");
 		}
 
+		if (db.getCount() > CHAPTERLIMIT)
+		{
+			purgeOldItems();
+		}
+	}
+
+	/**
+	 * Gets the latest from feed.
+	 * 
+	 * @return the latest from feed
+	 */
+	private Vector<MangaItem> getLatestFromFeed()
+	{
+		Vector<MangaItem> latestResults = new Vector<MangaItem>();
+		MangaItem latestChapter = null;
+		db = new MangaItemSQLiteHelper(getApplicationContext());
+		if (db.getCount() == 0)
+		{
+			latestChapter = new MangaItem("", "", "");
+		}
+		else
+		{
+			latestChapter = db.getLatestChapter();
+		}
+
+		RssFeedUrlConnection feed = new RssFeedUrlConnection(url);
+
+		try {
+			reader = new RssFeedPullParser(feed.getInputStream());
+
+			MangaItem latestFromFeed = reader.readLatestChapter();
+			while (latestFromFeed != null && !latestChapter.getTitle().equals(latestFromFeed.getTitle()))
+			{
+				Log.i(TAG, latestFromFeed.getTitle());
+				latestResults.add(latestFromFeed);
+				latestFromFeed = reader.readLatestChapter();
+			}
+			reader.disconect();
+			feed.closeConnection();
+
+		} catch (IOException e) {
+			Log.e(TAG, "Error initializing rss reader" + e.toString());
+		} catch (XmlPullParserException e) {
+
+			Log.e(TAG, "Error rss reader");
+		}
+
+		return latestResults;
 	}
 
 	/**
@@ -157,7 +173,6 @@ public class RssNotificationService extends IntentService {
 			notifyActivity(Activity.RESULT_OK);
 		}
 
-		db.addMangaList(latestResults);
 		Log.i(TAG, " activity running: " + isForeground(getApplicationContext().getPackageName()));
 
 	}
@@ -209,8 +224,7 @@ public class RssNotificationService extends IntentService {
 		mBuilder.setContentText(latest.getDescription());
 
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		int mId = 1;
-		mNotificationManager.notify(mId, mBuilder.build());
+		mNotificationManager.notify(NotificationId, mBuilder.build());
 	}
 
 	/**
@@ -244,14 +258,14 @@ public class RssNotificationService extends IntentService {
 
 		mBuilder.setContentText(latest.size() + "New Chapters avaialable");
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		int mId = 1;
-		mNotificationManager.notify(mId, mBuilder.build());
+		mNotificationManager.notify(NotificationId, mBuilder.build());
 	}
 
 	/**
 	 * Generate notificaton.
-	 *
-	 * @param title the title
+	 * 
+	 * @param title
+	 *            the title
 	 * @return the notification compat. builder
 	 */
 	private NotificationCompat.Builder generateNotificaton(String title)
@@ -277,70 +291,6 @@ public class RssNotificationService extends IntentService {
 		Intent intent = new Intent(NOTIFICATION);
 		intent.putExtra(RESULT, result);
 		sendBroadcast(intent);
-	}
-	
-//TODO: Will probably have to change this to a runnable
-	/**
-	 * The Class MyTask. This class will download the latest chapters from the
-	 * the rssfeed and places them in the database.
-	 */
-	private class MyTask extends AsyncTask<String, Void, Vector<MangaItem>> {
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPreExecute()
-		 */
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			// initialize the dialog
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#doInBackground(Params[])
-		 */
-		@Override
-		protected Vector<MangaItem> doInBackground(String... params) {
-			Log.i(TAG, "doInBackground");
-			RssFeedPullParser reader = new RssFeedPullParser();
-			Log.i(TAG, params[0]);
-			Vector<MangaItem> list = new Vector<MangaItem>();
-			RssFeedUrlConnection connection = null;
-			connection = new RssFeedUrlConnection(params[0]);
-			try {
-				reader.setInput(connection.getInputStream());
-				try {
-					list.addAll(reader.getAllItems());
-					reader.disconect();
-
-				} catch (XmlPullParserException e) {
-					Log.e(TAG, e.toString());
-				}
-			} catch (IOException e) {
-				Log.w(TAG, e.toString());
-			} finally {
-				connection.closeConnection();
-			}
-			return list;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-		 */
-		protected void onPostExecute(Vector<MangaItem> result) {
-
-			if (result.size() != 0)
-			{
-				db.addMangaList(result);
-				updateUser(result);
-			}
-		}
-
 	}
 
 }
