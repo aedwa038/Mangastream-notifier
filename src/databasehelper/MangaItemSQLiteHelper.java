@@ -93,6 +93,7 @@ public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 
 		Log.i(TAG, CREATE_CONTACTS_TABLE);
 		db.execSQL(CREATE_CONTACTS_TABLE);
+		db.close();
 
 	}
 
@@ -154,6 +155,7 @@ public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(countQuery, null);
 		int count = cursor.getCount();
+		db.close();
 		cursor.close();
 		return count;
 	}
@@ -193,6 +195,7 @@ public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 			cursor.moveToFirst();
 			item = getMangaItem(cursor);
 		}
+		cursor.close();
 		db.close();
 		return item;
 	}
@@ -221,6 +224,7 @@ public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 
 		}
+		cursor.close();
 		db.close();
 		return items;
 	}
@@ -244,6 +248,7 @@ public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 			cursor.moveToFirst();
 			item = getMangaItem(cursor);
 		}
+		cursor.close();
 		db.close();
 		return item;
 	}
@@ -266,7 +271,7 @@ public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 			item = getMangaItem(cursor);
 		}
 		deleteMangaItem(item);
-
+		cursor.close();
 		db.close();
 
 	}
