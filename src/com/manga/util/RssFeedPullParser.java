@@ -31,14 +31,15 @@ public class RssFeedPullParser {
 
 	/** The parser. */
 	XmlPullParser parser = null;
-	
+
 	/** The factory. */
 	private XmlPullParserFactory factory;
 
 	/**
 	 * Instantiates a new rss feed pull parser.
-	 *
-	 * @param input the input
+	 * 
+	 * @param input
+	 *            the input
 	 */
 	public RssFeedPullParser(InputStream input) {
 		super();
@@ -47,9 +48,11 @@ public class RssFeedPullParser {
 
 	/**
 	 * Instantiates a new rss feed pull parser.
-	 *
-	 * @param input the input
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * 
+	 * @param input
+	 *            the input
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public RssFeedPullParser(HttpURLConnection input) throws IOException {
 		super();
@@ -58,7 +61,7 @@ public class RssFeedPullParser {
 
 	/**
 	 * Gets the input.
-	 *
+	 * 
 	 * @return the input
 	 */
 	public InputStream getInput() {
@@ -67,8 +70,9 @@ public class RssFeedPullParser {
 
 	/**
 	 * Sets the input.
-	 *
-	 * @param input the new input
+	 * 
+	 * @param input
+	 *            the new input
 	 */
 	public void setInput(InputStream input) {
 		this.input = input;
@@ -76,9 +80,11 @@ public class RssFeedPullParser {
 
 	/**
 	 * Sets the input.
-	 *
-	 * @param input the new input
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * 
+	 * @param input
+	 *            the new input
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public void setInput(HttpURLConnection input) throws IOException {
 		this.input = input.getInputStream();
@@ -93,10 +99,12 @@ public class RssFeedPullParser {
 
 	/**
 	 * Gets the all chapters.
-	 *
+	 * 
 	 * @return the all chapters
-	 * @throws XmlPullParserException the xml pull parser exception
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws XmlPullParserException
+	 *             the xml pull parser exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public List<MangaItem> getAllChapters() throws XmlPullParserException, IOException {
 		init();
@@ -105,8 +113,9 @@ public class RssFeedPullParser {
 
 	/**
 	 * Inits the.
-	 *
-	 * @throws XmlPullParserException the xml pull parser exception
+	 * 
+	 * @throws XmlPullParserException
+	 *             the xml pull parser exception
 	 */
 	private void init() throws XmlPullParserException
 	{
@@ -117,10 +126,12 @@ public class RssFeedPullParser {
 
 	/**
 	 * Parses the.
-	 *
+	 * 
 	 * @return the list
-	 * @throws XmlPullParserException the xml pull parser exception
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws XmlPullParserException
+	 *             the xml pull parser exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	private List<MangaItem> parse() throws XmlPullParserException, IOException {
 		List<MangaItem> entries = new Vector<MangaItem>();
@@ -157,26 +168,28 @@ public class RssFeedPullParser {
 
 		return entries;
 	}
-	
+
 	/**
 	 * Gets the all items.
-	 *
+	 * 
 	 * @return the all items
-	 * @throws XmlPullParserException the xml pull parser exception
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws XmlPullParserException
+	 *             the xml pull parser exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public List<MangaItem> getAllItems() throws XmlPullParserException, IOException {
 		return parse();
 	}
-	
-	 
-	
+
 	/**
 	 * Read next item.
-	 *
+	 * 
 	 * @return the manga item
-	 * @throws XmlPullParserException the xml pull parser exception
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws XmlPullParserException
+	 *             the xml pull parser exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public MangaItem readLatestChapter() throws XmlPullParserException, IOException {
 		if (parser == null)
@@ -188,14 +201,16 @@ public class RssFeedPullParser {
 
 	/**
 	 * Read item.
-	 *
+	 * 
 	 * @return the manga item
-	 * @throws XmlPullParserException the xml pull parser exception
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws XmlPullParserException
+	 *             the xml pull parser exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	private MangaItem readItem() throws XmlPullParserException, IOException {
 		boolean done = false;
-		String title = null;
+		String title = null; 
 		String link = null;
 		String description = null;
 		String pubDate = null;
@@ -219,20 +234,20 @@ public class RssFeedPullParser {
 
 					}
 					if (tagName.equals("title")) {
-						title = parser.nextText().toString();
+						title = getTag(tagName);
 						Log.i(TAG, "title:" + title);
 					}
 					if (tagName.equals("link")) {
-						link = parser.nextText().toString();
+						link = getTag(tagName);
 						Log.i(TAG, "link:" + link);
 					}
 					if (tagName.equals("description")) {
-						description = parser.nextText().toString();
+						description = getTag(tagName);
 						Log.i(TAG, "description:" + description);
 					}
 
 					if (tagName.equals("pubDate")) {
-						pubDate = parser.nextText().toString();
+						pubDate = getTag(tagName);
 						Log.i(TAG, "pubDate:" + pubDate);
 					}
 				}
@@ -249,15 +264,43 @@ public class RssFeedPullParser {
 		}
 		return item;
 	}
-	
+
+	/**
+	 * Gets the tag.
+	 *
+	 * @param tagName the tag name
+	 * @return the tag
+	 * @throws XmlPullParserException the xml pull parser exception
+	 * @throws IOException 
+	 */
+	private String getTag(String tagName) throws XmlPullParserException
+	{
+		String tag = "";
+		try {
+			tag = parser.nextText().toString();
+		} catch (XmlPullParserException e) {
+			if (tagName.equals("title")) {
+				throw new XmlPullParserException("Error parsing title");
+			}
+
+		} catch (IOException e) {
+			if (tagName.equals("title")) {
+				throw new XmlPullParserException("Error parsing title");
+			}
+		}
+		return tag;
+
+	}
+
 	/**
 	 * Disconect.
-	 *
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * 
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public void disconect() throws IOException {
 		input.close();
-		
+
 	}
 
 }
