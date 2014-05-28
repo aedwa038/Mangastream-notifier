@@ -1,6 +1,7 @@
 package databasehelper;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
@@ -93,7 +94,6 @@ public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 
 		Log.i(TAG, CREATE_CONTACTS_TABLE);
 		db.execSQL(CREATE_CONTACTS_TABLE);
-		db.close();
 
 	}
 
@@ -120,7 +120,7 @@ public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 	 */
 	public void addMangaItem(MangaItem item)
 	{
-		Log.d("addBook", item.toString());
+		Log.d("addMangaItem", item.toString());
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues value = new ContentValues();
 		value.put(COLUMN_NAME_TITLE, item.getTitle());
@@ -294,6 +294,29 @@ public class MangaItemSQLiteHelper extends SQLiteOpenHelper {
 		item.setUrl(cursor.getString(4));
 
 		return item;
+	}
+	
+	public HashSet<String> getTitles ()
+	{
+		HashSet<String> items = new HashSet<String>();
+		String query = "SELECT  "+COLUMN_NAME_TITLE+ " FROM " + TABLE_MANGA + " ORDER BY " + COLUMN_NAME_DATE + " DESC";
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery(query, null);
+
+		String item = null;
+		if (cursor.moveToFirst()) {
+			do {
+				item = cursor.getString(0);
+				
+				items.add(item);
+			} while (cursor.moveToNext());
+
+		}
+		cursor.close();
+		db.close();
+		return items;
+		
+		
 	}
 
 }

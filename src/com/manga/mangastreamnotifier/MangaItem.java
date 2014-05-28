@@ -25,6 +25,7 @@ public class MangaItem implements Comparable<MangaItem> {
 	/** The id. */
 	private int id;
 
+
 	/**
 	 * Gets the id.
 	 *
@@ -158,7 +159,7 @@ public class MangaItem implements Comparable<MangaItem> {
 		if (date != null)
 		{
 			try {
-				this.date = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z")
+				this.date = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss Z")
 						.parse(date);
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block

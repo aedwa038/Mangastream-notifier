@@ -182,7 +182,7 @@ public class MainActivity extends ListActivity {
 			// Start every 30 seconds TODO: need to change this to every 30
 			// minutes
 			alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
-					60 * 1000, pintent);
+					(120 * 5) * 1000, pintent);
 	}
 
 	/**

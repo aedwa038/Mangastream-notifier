@@ -1,6 +1,7 @@
 package com.manga.mangastreamnotifier.service;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
@@ -102,15 +103,15 @@ public class RssNotificationService extends IntentService {
 	private Vector<MangaItem> getLatestFromFeed()
 	{
 		Vector<MangaItem> latestResults = new Vector<MangaItem>();
-		MangaItem latestChapter = null;
+		HashSet<String> latestChapter = null;
 		db = new MangaItemSQLiteHelper(getApplicationContext());
 		if (db.getCount() == 0)
 		{
-			latestChapter = new MangaItem("", "", "");
+			latestChapter = new HashSet<String>();
 		}
 		else
 		{
-			latestChapter = db.getLatestChapter();
+			latestChapter = db.getTitles();
 		}
 
 		RssFeedUrlConnection feed = new RssFeedUrlConnection(url);
@@ -119,9 +120,10 @@ public class RssNotificationService extends IntentService {
 			reader = new RssFeedPullParser(feed.getInputStream());
 
 			MangaItem latestFromFeed = reader.readLatestChapter();
-			while (latestFromFeed != null && !latestChapter.getTitle().equals(latestFromFeed.getTitle()))
+			while (latestFromFeed != null && !latestChapter.contains(latestFromFeed.getTitle()))
 			{
 				Log.i(TAG, latestFromFeed.getTitle());
+				latestChapter.add(latestFromFeed.getTitle());
 				latestResults.add(latestFromFeed);
 				latestFromFeed = reader.readLatestChapter();
 			}
