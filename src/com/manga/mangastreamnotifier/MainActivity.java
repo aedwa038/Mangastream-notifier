@@ -74,8 +74,7 @@ public class MainActivity extends ListActivity {
 		View footer = inflater.inflate(R.layout.footer_view, null);
 		TextView footerView = (TextView) footer.findViewById(R.id.footerView);
 		getListView().addFooterView(footerView);
-		getListView().setAdapter(adapter);
-		// getListView().setSelector(findViewById(R.id.l))
+		getListView().setAdapter(adapter); 
 		db = new MangaItemSQLiteHelper(getApplicationContext());
 
 	}
