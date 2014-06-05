@@ -4,5 +4,7 @@ Simple app that notifies the user when a new chapter of their favorite  manga is
 
 <div align="center">
   <img height="400px" src="https://raw.githubusercontent.com/aedwa038/Mangastream-notifier/master/samples/listviewScreenShot.png"/>
-  <img height="400px" src="https://raw.githubusercontent.com/aedwa038/Mangastream-notifier/master/samples/notificationScreenShot.png"/>
+</div>
+<div align="center">
+<img height="400px" src="https://raw.githubusercontent.com/aedwa038/Mangastream-notifier/master/samples/notificationScreenShot.png"/>
 </div>
