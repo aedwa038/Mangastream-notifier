@@ -1,0 +1,2 @@
+A simple App made to notify users
+of Manga updates from Mangastream.com
