@@ -1,15 +1,20 @@
 package com.manga.mangastreamnotifier;
 
 import java.util.Calendar;
+
+
 import com.manga.mangastreamnotifier.service.RssNotificationService;
 import databasehelper.MangaItemSQLiteHelper;
 
+import about.AboutDialog;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -43,9 +48,9 @@ public class MainActivity extends ListActivity {
 
 	/** The db. */
 	MangaItemSQLiteHelper db;
-	
+
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
-		
+
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Bundle bundle = intent.getExtras();
@@ -74,7 +79,7 @@ public class MainActivity extends ListActivity {
 		View footer = inflater.inflate(R.layout.footer_view, null);
 		TextView footerView = (TextView) footer.findViewById(R.id.footerView);
 		getListView().addFooterView(footerView);
-		getListView().setAdapter(adapter); 
+		getListView().setAdapter(adapter);
 		db = new MangaItemSQLiteHelper(getApplicationContext());
 
 	}
@@ -103,11 +108,11 @@ public class MainActivity extends ListActivity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.Reload) {
-			adapter.clear();
-			loadItems();
+		if (id == R.id.About) {
+			AboutDialog about = new AboutDialog(this);
+			about.setTitle("about this app");
+			about.show();
 			return true;
-		} else if (id == R.id.Filter) {
 
 		}
 		return super.onOptionsItemSelected(item);
@@ -126,7 +131,7 @@ public class MainActivity extends ListActivity {
 		{
 			loadItems();
 		}
-		
+
 	}
 
 	/**
@@ -163,7 +168,7 @@ public class MainActivity extends ListActivity {
 			startNotifications();
 
 		}
-		
+
 		else
 		{
 			loadFromDatabase();
@@ -175,13 +180,13 @@ public class MainActivity extends ListActivity {
 	 */
 	private void startNotifications() {
 		Calendar cal = Calendar.getInstance();
-		
-			Log.i(TAG, "Registering new service");
-			alarm = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-			// Start every 30 seconds TODO: need to change this to every 30
-			// minutes
-			alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
-					(120 * 5) * 1000, pintent);
+
+		Log.i(TAG, "Registering new service");
+		alarm = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+		// Start every 30 seconds TODO: need to change this to every 30
+		// minutes
+		alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
+				(120 * 5) * 1000, pintent);
 	}
 
 	/**
